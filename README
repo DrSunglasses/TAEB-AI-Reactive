@@ -1,0 +1,16 @@
+
+TAEB::AI::Reactive -- a NetHack AI built on the TAEB framework
+==================
+
+AUTHORS
+-------
+
+TAEB::AI::Reactive is the work of Jeffrey Bosboom <jbosboom@uci.edu>.
+
+
+LICENSE
+-------
+
+TAEB::AI::Reactive is licensed under the terms of the GNU General
+Public License, version 2.  See the included LICENSE file for the
+full text of the License.
