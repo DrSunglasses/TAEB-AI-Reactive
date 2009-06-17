@@ -15,7 +15,7 @@ sub analyze {
         $y = shuffle (-1, 0, 1);
     }
     
-    return (TAEB::Action::Move->new(direction => delta2vi($x, $y)), RANDOM_WALK_FALLBACK);
+    return (TAEB::Action::Move->new(direction => delta2vi($x, $y)), RANDOM_WALK_FALLBACK, "randomly walking");
 }
 
 __PACKAGE__->meta->make_immutable;
