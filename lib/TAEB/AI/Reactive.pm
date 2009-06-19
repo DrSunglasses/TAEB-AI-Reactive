@@ -64,6 +64,7 @@ sub BUILD {
     TAEB->log->ai("In BUILD, about to add analyzers");
     for my $analyzer (load_analyzers()) {
         $self->add_analyzer($analyzer);
+        TAEB->publisher->subscribe($analyzer);
     }
     TAEB->log->ai("Done loading analyzers");
 }
