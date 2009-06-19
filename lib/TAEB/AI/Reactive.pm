@@ -3,22 +3,55 @@ use TAEB::OO;
 use Set::Object;
 extends 'TAEB::AI';
 
-has 'analyzers' => (
+# Analyzers
+
+has 'active_analyzers' => (
     isa => 'Set::Object',
+    is => 'ro',
     default => sub { Set::Object->new; },
-    handles => {
-        add_analyzer => 'insert',
-        remove_analyzer => 'remove',
-        analyzers => 'elements',
-    },
 );
 
-has 'current_priority' => (
-    isa => 'Int',
-    is => 'rw',
-    writer => '_set_current_priority',
-    default => 0,
+has 'suspended_analyzers' => (
+    isa => 'Set::Object',
+    is => 'ro',
+    default => sub { Set::Object->new },
 );
+
+sub add_analyzer {
+    my ($self, $analyzer) = @_;
+    TAEB->log->ai("Adding analyzer $analyzer");
+    $self->active_analyzers->insert($analyzer);
+}
+
+sub add_analyzer_suspended {
+    my ($self, $analyzer) = @_;
+    TAEB->log->ai("Adding analyzer $analyzer as initially suspended");
+    $self->suspended_analyzers->insert($analyzer);
+}
+
+sub suspend_analyzer {
+    my ($self, $analyzer) = @_;
+    TAEB->log->ai("Suspending analyzer $analyzer");
+    $self->active_analyzers->remove($analyzer);
+    $self->suspended_analyzers->insert($analyzer);
+}
+
+sub restore_analyzer {
+    my ($self, $analyzer) = @_;
+    TAEB->log->ai("Restoring analyzer $analyzer");
+    $self->suspended_analyzers->remove($analyzer);
+    $self->active_analyzers->insert($analyzer);
+}
+
+sub remove_analyzer {
+    my ($self, $analyzer) = @_;
+    TAEB->log->ai("Removing analyzer $analyzer");
+    $self->active_analyzers->remove($analyzer);
+    $self->suspended_analyzers->remove($analyzer);
+}
+
+# initialize analyzers
+# TODO: differentiate between new game and restored state
 
 use Module::Pluggable (
     instantiate => 'new',
@@ -30,10 +63,19 @@ sub BUILD {
     my $self = shift;
     TAEB->log->ai("In BUILD, about to add analyzers");
     for my $analyzer (load_analyzers()) {
-        TAEB->log->ai("Adding analyzer $analyzer").
         $self->add_analyzer($analyzer);
     }
+    TAEB->log->ai("Done loading analyzers");
 }
+
+# next_action and related things
+
+has 'current_priority' => (
+    isa => 'Int',
+    is => 'rw',
+    writer => '_set_current_priority',
+    default => 0,
+);
 
 sub next_action {
     my $self = shift;
@@ -44,9 +86,14 @@ sub next_action {
     
     TAEB->log->ai("Beginning analyzer loop");
     
-    for my $analyzer ($self->analyzers) {
+    my @iterants = $self->active_analyzers->elements;
+    for my $analyzer (@iterants) {
         my ($action, $priority, $currently_string) = $analyzer->analyze();
-        TAEB->log->ai("$analyzer proposed $action with priority $priority");
+        if (!defined $action) {
+            TAEB->log->ai("$analyzer was consulted, but proposed no action");
+        } else {
+            TAEB->log->ai("$analyzer wants $action ($currently_string) with priority $priority");
+        }
         next unless defined $action;
         
         if ($priority > $self->current_priority) {
@@ -56,7 +103,7 @@ sub next_action {
         }
     }
     
-    TAEB->ai->currently("$currently: " . $self->current_priority);
+    TAEB->ai->currently("$currently: ${\$self->current_priority}");
     
     return $next_action;
 }
