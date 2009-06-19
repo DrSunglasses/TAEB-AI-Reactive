@@ -1,7 +1,7 @@
 package TAEB::AI::Reactive::Analyzer;
 use TAEB::OO;
 
-sub next_action {}
+sub analyze {}
 
 __PACKAGE__->meta->make_immutable;
 no TAEB::OO;
