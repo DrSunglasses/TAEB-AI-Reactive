@@ -1,7 +1,5 @@
 package TAEB::AI::Reactive::Priority;
-use Sub::Exporter -setup => {
-    exports => [ qw(EAT_STARVING PRAY_STARVING EAT_WEAK EAT_HUNGRY CURE_USING_UNIHORN CHECK_INTERESTING EXPLORE RANDOM_WALK_FALLBACK) ]
-};
+
 use constant {
     EAT_STARVING => 955,
     PRAY_STARVING => 950,
@@ -14,6 +12,5 @@ use constant {
 };
 
 #TODO: work out a system like saiph has for partitioning the priority space
-#TODO: also, auto-export all those constants without having to list them ;)
 
 1;

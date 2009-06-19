@@ -1,6 +1,6 @@
 package TAEB::AI::Reactive::Analyzer::Explore;
 use TAEB::OO;
-use TAEB::AI::Reactive::Priority qw(EXPLORE);
+use TAEB::AI::Reactive::Priority;
 extends 'TAEB::AI::Reactive::Analyzer';
 
 sub analyze {
@@ -15,7 +15,7 @@ sub analyze {
         return;
     }
     
-    return ($path, EXPLORE, "exploring");
+    return ($path, TAEB::AI::Reactive::Priority::EXPLORE, "exploring");
 }
 
 subscribe level_change => sub {

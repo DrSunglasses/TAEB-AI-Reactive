@@ -1,7 +1,7 @@
 package TAEB::AI::Reactive::Analyzer::CheckInteresting;
 use TAEB::OO;
 use MooseX::AttributeHelpers;
-use TAEB::AI::Reactive::Priority qw(CHECK_INTERESTING);
+use TAEB::AI::Reactive::Priority;
 extends 'TAEB::AI::Reactive::Analyzer';
 
 has interesting_tiles => (
@@ -33,7 +33,7 @@ after remove_tile => sub {
 sub analyze {
     my ($self) = @_;
     TAEB->ai->suspend_analyzer($self) and return if $self->num_tiles == 0;
-    return if TAEB->ai->current_priority >= CHECK_INTERESTING;
+    return if TAEB->ai->current_priority >= TAEB::AI::Reactive::Priority::CHECK_INTERESTING;
     
     my $target = $self->next_tile;
     while (!$target->is_interesting) {
@@ -42,7 +42,9 @@ sub analyze {
         $target = $self->next_tile;
     }
     
-    return (TAEB::World::Path->calculate_path($target), CHECK_INTERESTING, 'moving to an interesting tile');
+    return (TAEB::World::Path->calculate_path($target), 
+        TAEB::AI::Reactive::Priority::CHECK_INTERESTING, 
+        'checking an interesting tile');
 }
 
 subscribe tile_became_interesting => sub {
