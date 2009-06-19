@@ -45,9 +45,10 @@ sub analyze {
     return (TAEB::World::Path->calculate_path($target), CHECK_INTERESTING, 'moving to an interesting tile');
 }
 
-subscribe tile_update => sub {
+subscribe tile_became_interesting => sub {
     my ($self, $event) = @_;
     my $tile = $event->tile;
+    #TAEB->log->ai('CheckInteresting got a message');
     if ($tile->is_interesting) {
         TAEB->log->ai('CheckInteresting heard about an interesting tile');
         $self->add_tile($tile);
