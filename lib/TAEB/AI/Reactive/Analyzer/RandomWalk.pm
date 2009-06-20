@@ -7,15 +7,18 @@ use TAEB::AI::Reactive::Priority qw(RANDOM_WALK_FALLBACK);
 extends 'TAEB::AI::Reactive::Analyzer';
 
 sub analyze {
-    my $x = 0;
-    my $y = 0;
+    my @walkable_neighbors;
     
-    until ($x != 0 || $y != 0) {
-        $x = shuffle (-1, 0, 1);
-        $y = shuffle (-1, 0, 1);
-    }
+    TAEB->each_adjacent(sub {
+        my ($tile, $direction) = @_;
+        push @walkable_neighbors, $direction if $tile->is_walkable;
+    });
     
-    return (TAEB::Action::Move->new(direction => delta2vi($x, $y)), 
+    return if scalar(@walkable_neighbors) == 0;
+    
+    shuffle @walkable_neighbors;
+    
+    return (TAEB::Action::Move->new(direction => $walkable_neighbors[0]), 
         TAEB::AI::Reactive::Priority::RANDOM_WALK_FALLBACK, "randomly walking");
 }
 
