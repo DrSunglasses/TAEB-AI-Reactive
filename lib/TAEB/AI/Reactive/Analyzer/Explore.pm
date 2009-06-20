@@ -4,7 +4,7 @@ use TAEB::AI::Reactive::Priority;
 extends 'TAEB::AI::Reactive::Analyzer';
 
 sub analyze {
-    return if TAEB->ai->current_priority > EXPLORE;
+    return if TAEB->ai->current_priority > TAEB::AI::Reactive::Priority::EXPLORE;
     my $self = shift;
     
     my $path = TAEB::World::Path->first_match(sub {
