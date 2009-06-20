@@ -16,9 +16,7 @@ sub analyze {
     
     return if scalar(@walkable_neighbors) == 0;
     
-    shuffle @walkable_neighbors;
-    
-    return (TAEB::Action::Move->new(direction => $walkable_neighbors[0]), 
+    return (TAEB::Action::Move->new(direction => $walkable_neighbors[rand @walkable_neighbors]), 
         TAEB::AI::Reactive::Priority::RANDOM_WALK_FALLBACK, "randomly walking");
 }
 
