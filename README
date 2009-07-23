@@ -7,6 +7,25 @@ AUTHORS
 
 TAEB::AI::Reactive is the work of Jeffrey Bosboom <jbosboom@uci.edu>.
 
+PHILOSOPHY
+----------
+
+TAEB::AI::Reactive (henceforth referred to as "Reactive") addresses TAEB's
+speed problems by being announcement-driven rather than polling the world
+model.  After all, ScreenScraper and Cartographer are polling NetHack's output
+to update the world model anyway -- why duplicate this effort?
+
+Analyzers are the pluggable units of Reactive behavior.  Each analyzer 
+subscribes to events that it cares about, usually saving some 
+information in analyzer-internal state.  When the analyze method is 
+invoked, the analyzer checks its state to see if it wants to do 
+something.  If it does, it submits an action to do it (possibly asking 
+the world model for more information now that it knows it wants to act); 
+otherwise, it suspends itself, so that analyze will not be invoked from 
+the next_action loop.  Suspended analyzers continue to receive events, 
+so they can reactivate themselves when they want to do something again.  
+In this way, wasted computation is minimized.  (I also find it to be a 
+cleaner design than polling, but that's a matter of opinion.)
 
 LICENSE
 -------
